@@ -23,7 +23,7 @@
       </div>
       <div class="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2">Nível</label>
-        <select v-model="developer.level_id" class="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        <select v-model="developer.level.id" class="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
           <option v-for="level in levels" :key="level.id" :value="level.id">{{ level.level }}</option>
         </select>
       </div>
@@ -55,7 +55,7 @@ export default {
         gender: '',
         birthdate: '',
         hobby: '',
-        level_id: ''
+        level: '',
       },
       levels: [],
       isEditMode: false,
@@ -76,7 +76,7 @@ export default {
       if (this.developerId) {
         axios.get(`http://localhost:8000/api/developers/${this.developerId}`)
           .then(response => {
-            this.developer = response.data;
+            this.developer = response.data.data ?? [];
             this.isEditMode = true;
           })
           .catch(error => {
@@ -85,10 +85,9 @@ export default {
       }
     },
     saveDeveloper() {
-      console.log(this.developer)
       const apiURL = this.isEditMode ? `http://localhost:8000/api/developers/${this.developerId}` : 'http://localhost:8000/api/developers';
       const method = this.isEditMode ? 'put' : 'post';
-      console.log(apiURL, method)
+      this.developer.level_id = this.developer.level.id ?? ''
       axios[method](apiURL, this.developer)
         .then(() => {
           this.$emit('save');

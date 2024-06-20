@@ -50,11 +50,7 @@ axios.interceptors.response.use(
   (response) => response,
   (error) => {
     if (!error.response) {
-      toast.error('O servidor está indisponível! Por favor, tente novamente mais tarde.',
-        {
-          position: POSITION.TOP_RIGHT
-        }
-      );
+      toast.error('O servidor está indisponível! Por favor, tente novamente mais tarde.');
     } else {
       const { status, data } = error.response;
       if (status === 422) {
@@ -80,7 +76,7 @@ app.config.globalProperties.$cookies = Cookies
 app.use(router)
 app.use(VueSweetalert2)
 app.use(Toast, {
-  position: POSITION.TOP_LEFT,
+  position: POSITION.BOTTOM_RIGHT,
   maxToasts: 20,
   newestOnTop: true,
   shareAppContext: true,

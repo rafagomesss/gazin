@@ -2,99 +2,64 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Developer;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\DeveloperRequest;
+use App\Http\Resources\DeveloperResource;
+use App\Services\DeveloperService;
+use Illuminate\Http\Response;
 
 class DeveloperController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $developerService;
+
+    public function __construct(DeveloperService $developerService)
+    {
+        $this->developerService = $developerService;
+    }
+
     public function index()
     {
+        $developers = $this->developerService->all();
+        return DeveloperResource::collection($developers);
+    }
+
+    public function store(DeveloperRequest $request)
+    {
         try {
-            $developers = Developer::with('level')->get();
-            return response()->json($developers, 200);
+            $developer = $this->developerService->create($request->validated());
+            return new DeveloperResource($developer);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage() . ' : Erro ao buscar desenvolvedores'], 500);
+            return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 400);
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function show($id)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'gender' => 'required|string|max:1',
-            'birthdate' => 'required|date',
-            'hobby' => 'nullable|string|max:255',
-            'level_id' => 'required|exists:levels,id'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
         try {
-            $developer = Developer::create($request->all());
-            return response()->json($developer, 201);
+            $developer = $this->developerService->find($id);
+            return new DeveloperResource($developer);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getmessage() . ' : Erro ao criar desenvolvedor'], 500);
+            return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 404);
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function update(DeveloperRequest $request, $id)
     {
         try {
-            $developer = Developer::with('level')->findOrFail($id);
-            return response()->json($developer, 200);
+            $developer = $this->developerService->update($id, $request->validated());
+            return new DeveloperResource($developer);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage() . ' : Desenvolvedor não encontrado'], 404);
+            return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 400);
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'gender' => 'required|string|max:1',
-            'birthdate' => 'required|date',
-            'hobby' => 'nullable|string|max:255',
-            'level_id' => 'required|exists:levels,id'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        try {
-            $developer = Developer::findOrFail($id);
-            $developer->update($request->all());
-            return response()->json($developer, 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage() . ' : Erro ao atualizar desenvolvedor'], 500);
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
         try {
-            Developer::findOrFail($id)->delete();
-            return response()->json(['message' => 'Desenvolvedor deletado com sucesso'], 200);
+            $this->developerService->delete($id);
+            return response()->json(['message' => 'Desenvolvedor deletado com sucesso'], Response::HTTP_OK);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage() . ' : Erro ao deletar desenvolvedor'], 500);
+            return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 400);
         }
     }
 }

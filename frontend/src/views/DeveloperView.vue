@@ -86,7 +86,7 @@ export default {
     fetchDevelopers() {
       axios.get('http://localhost:8000/api/developers')
         .then(response => {
-          this.developers = response.data;
+          this.developers = response.data.data ?? [];
         })
         .catch(error => {
           console.error('Error fetching developers:', error);

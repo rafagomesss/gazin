@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LevelRequest;
 use App\Http\Resources\LevelResource;
-use App\Models\Level;
 use App\Services\LevelService;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class LevelController extends Controller
