@@ -18,6 +18,7 @@
           {{ errorMessage }}
         </div>
         <div class="flex items-center justify-end">
+          <router-link to="/register" class="text-teal-500 hover:text-teal-700 text-sm mr-auto">Não possui cadastro? Registre-se.</router-link>
           <button type="submit"
             class="bg-teal-400 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded">Entrar</button>
         </div>

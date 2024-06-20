@@ -20,6 +20,7 @@
             class="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
         </div>
         <div class="flex items-center justify-between">
+          <router-link to="/login" class="text-teal-500 hover:text-teal-700 text-sm mr-auto">Já possui cadastro? Faça Login.</router-link>
           <button type="submit"
             class="bg-teal-400 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded">Registrar</button>
         </div>
