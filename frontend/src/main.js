@@ -1,22 +1,19 @@
 import './assets/main.css'
+import './index.css'
+import 'vue-toastification/dist/index.css'
+import 'sweetalert2/dist/sweetalert2.min.css'
 
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import axios from 'axios'
 import Cookies from 'js-cookie'
-import Toast , { POSITION } from "vue-toastification";
-import { useToast } from "vue-toastification";
+import Toast, { POSITION, useToast } from 'vue-toastification';
 import VueSweetalert2 from 'vue-sweetalert2';
-import 'sweetalert2/dist/sweetalert2.min.css';
-
-import './index.css'
-import "vue-toastification/dist/index.css";
 
 axios.defaults.baseURL = 'http://localhost:8000'
 axios.defaults.withCredentials = true
 
-const toast = useToast()
 let isFetchingCSRFToken = false;
 
 axios.interceptors.request.use(
@@ -49,46 +46,54 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
+    const toast = useToast();
     if (!error.response) {
       toast.error('O servidor está indisponível! Por favor, tente novamente mais tarde.');
     } else {
       const { status, data } = error.response;
-      if (status === 422) {
-        const errorAuth = JSON.stringify(data.errors?.email) || JSON.stringify(data.errors?.password)
-        const messageError = errorAuth ? 'Dados inválidos!' : JSON.stringify(data.message) ?? data.error ?? 'Erro desconhecido!'
-        toast.warning('Erro de validação: ' + messageError, { position: POSITION.BOTTOM_RIGHT });
-      } else if (status === 500) {
-        toast.error('Erro interno do servidor. Por favor, tente novamente mais tarde.', { position: POSITION.BOTTOM_RIGHT });
-      } else if (status === 401) {
-        toast.error('Não autorizado. Por favor, faça login novamente.', { position: POSITION.BOTTOM_RIGHT });
-        localStorage.removeItem('auth_token');
-        router.push({ name: 'Login' });
-      } else {
-        toast.error('Erro: ' + (data.error || data.message || 'Ocorreu um erro desconhecido.'), { position: POSITION.BOTTOM_RIGHT });
+
+      switch (status) {
+        case 422: {
+          const errorAuth = data.errors?.email || data.errors?.password;
+          const messageError = errorAuth ? 'Dados inválidos!' : data.message || data.error || 'Erro desconhecido!';
+          toast.warning('Erro de validação: ' + messageError);
+          break;
+        }
+        case 500:
+          toast.error('Erro interno do servidor. Por favor, tente novamente mais tarde.');
+          break;
+        case 401:
+          toast.error('Não autorizado. Por favor, faça login novamente.');
+          localStorage.removeItem('auth_token');
+          router.push({ name: 'Login' });
+          break;
+        default:
+          toast.error('Erro: ' + (data.error || data.message || 'Ocorreu um erro desconhecido.'));
       }
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
   }
 );
 
 
-const app = createApp(App)
-app.config.globalProperties.$axios = axios
-app.config.globalProperties.$cookies = Cookies
-app.use(router)
-app.use(VueSweetalert2)
+const app = createApp(App);
+
+app.config.globalProperties.$axios = axios;
+app.config.globalProperties.$cookies = Cookies;
+
+app.use(router);
+app.use(VueSweetalert2);
 app.use(Toast, {
   position: POSITION.BOTTOM_RIGHT,
   maxToasts: 20,
   newestOnTop: true,
   shareAppContext: true,
   filterBeforeCreate: (toast, toasts) => {
-    if (toasts.filter(
-      t => t.type === toast.type
-    ).length !== 0) {
+    if (toasts.filter(t => t.type === toast.type).length !== 0) {
       return false;
     }
     return toast;
   }
 })
-app.mount('#app')
+
+app.mount('#app');

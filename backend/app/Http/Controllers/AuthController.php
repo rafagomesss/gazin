@@ -52,9 +52,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['E-mail e/ou senha inválidos!'],
-            ]);
+            return response()->json(['errors' => 'Dados inválidos!'], 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
