@@ -66,7 +66,7 @@ export default {
     fetchLevels() {
       axios.get('http://localhost:8000/api/levels')
         .then(response => {
-          this.levels = response.data;
+          this.levels = response.data.data;
         })
         .catch(error => {
           console.error('Error fetching levels:', error);

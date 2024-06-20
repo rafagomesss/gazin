@@ -17,7 +17,7 @@
         <div v-if="errorMessage" class="mb-4 text-red-500">
           {{ errorMessage }}
         </div>
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-end">
           <button type="submit"
             class="bg-teal-400 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded">Entrar</button>
         </div>

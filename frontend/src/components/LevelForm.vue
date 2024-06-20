@@ -7,6 +7,9 @@
         <input v-model="level.level" id="level" name="level" type="text" placeholder="Informe o nível"
           class="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
       </div>
+      <div v-if="errorMessage" class="mb-4 text-red-500">
+        {{ errorMessage }}
+      </div>
       <div class="flex items-center justify-end">
         <button @click="goBack"
           class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">Voltar</button>
@@ -33,6 +36,7 @@ export default {
         level: '',
       },
       isEditMode: false,
+      errorMessage: '',
     };
   },
   methods: {
@@ -40,7 +44,7 @@ export default {
       if (this.levelId) {
         axios.get(`http://localhost:8000/api/levels/${this.levelId}`)
           .then(response => {
-            this.level = response.data;
+            this.level = response.data.data;
             this.isEditMode = true;
           })
           .catch(error => {
@@ -56,6 +60,7 @@ export default {
           this.$emit('save');
         })
         .catch(error => {
+          this.errorMessage = error.response.data.message;
           console.error('Error saving level:', error);
         });
     },

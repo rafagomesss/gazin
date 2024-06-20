@@ -2,59 +2,65 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LevelRequest;
+use App\Http\Resources\LevelResource;
 use App\Models\Level;
+use App\Services\LevelService;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class LevelController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $levelService;
+
+    public function __construct(LevelService $levelService)
+    {
+        $this->levelService = $levelService;
+    }
+
     public function index()
     {
-        return Level::all();
+        $levels = $this->levelService->all();
+        return LevelResource::collection($levels);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(LevelRequest $request)
     {
-        $request->validate(['level' => 'required|string|max:255']);
-        return Level::create($request->all());
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        return Level::findOrFail($id);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $level = Level::findOrFail($id);
-        $request->validate(['level' => 'required|string|max:255']);
-        $level->update($request->all());
-        return $level;
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        $level = Level::findOrFail($id);
-
-        if ($level->developers()->count() > 0) {
-            return response()->json(['error' => 'Cannot delete level. Developers are associated with this level.'], 403);
+        try {
+            $level = $this->levelService->create($request->validated());
+            return new LevelResource($level);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 400);
         }
+    }
 
-        $level->delete();
-        return response()->json(['message' => 'Level deleted successfully']);
+    public function show($id)
+    {
+        try {
+            $level = $this->levelService->find($id);
+            return new LevelResource($level);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 404);
+        }
+    }
+
+    public function update(LevelRequest $request, $id)
+    {
+        try {
+            $level = $this->levelService->update($id, $request->validated());
+            return new LevelResource($level);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 400);
+        }
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $this->levelService->delete($id);
+            return response()->json(['message' => 'Level deleted successfully'], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 400);
+        }
     }
 }

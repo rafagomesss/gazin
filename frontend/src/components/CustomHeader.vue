@@ -1,62 +1,75 @@
 <template>
-  <header class="bg-gray-800 text-white p-4 flex justify-between items-center">
-    <div>
-      <h1 class="text-2xl">Desafio Gazin</h1>
-      <h2 class="text-xl">Rafael Gomes</h2>
+  <header class="bg-gray-800 text-white p-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center">
+      <div>
+        <h1 class="text-3xl font-bold text-teal-400">Desafio Gazin</h1>
+        <h2 class="text-lg text-gray-300">Rafael Gomes</h2>
+      </div>
+      <nav class="flex items-center space-x-4">
+        <template v-if="isLoggedIn">
+          <router-link to="/" class="nav-link" :class="{ 'active-link': isActive('/') }">Home</router-link>
+          <router-link to="/developers" class="nav-link" :class="isRouteActive('/developers')">Developers</router-link>
+          <router-link to="/levels" class="nav-link" :class="isRouteActive('/levels')">Levels</router-link>
+          <button @click="logoutHandler"
+            class="ml-4 px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 transition-colors duration-300">
+            Logout
+          </button>
+        </template>
+        <template v-else>
+          <router-link to="/register" class="nav-link" :class="isRouteActive('/register')">Registrar</router-link>
+          <router-link to="/login" class="nav-link" :class="isRouteActive('/login')">Login</router-link>
+        </template>
+      </nav>
     </div>
-    <nav class="flex items-center">
-      <router-link :to="{ name: 'Home' }" v-if="isLoggedIn" class="px-4" :class="linkClasses('Home')">Home</router-link>
-      <router-link :to="{ name: 'Developers' }" v-if="isLoggedIn" class="px-4" :class="linkClasses('Developers')">Developers</router-link>
-      <router-link :to="{ name: 'Levels' }" v-if="isLoggedIn" class="px-4" :class="linkClasses('Levels')">Levels</router-link>
-      <router-link :to="{ name: 'Register' }" v-if="!isLoggedIn" class="px-4" :class="linkClasses('Register')">Register</router-link>
-      <router-link :to="{ name: 'Login' }" v-if="!isLoggedIn" class="px-4" :class="linkClasses('Login')">Login</router-link>
-      <button @click="logout" v-if="isLoggedIn" class="ml-4 px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600">Logout</button>
-    </nav>
   </header>
 </template>
 
 <script>
-import axios from 'axios';
-import Cookies from 'js-cookie';
-import { useRoute } from 'vue-router';
+import { ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import useLogout from '../composables/useLogout';
 
 export default {
   name: 'CustomHeader',
   setup() {
     const route = useRoute();
+    const router = useRouter();
+    const { logout } = useLogout();
+    const isLoggedIn = ref(!!localStorage.getItem('auth_token'));
 
-    const linkClasses = (routeName) => ({
-      'px-4': true,
-      'text-teal-400': true, // Cor do texto normal
-      'text-white': route.name === routeName, // Cor do texto quando link ativo
-      'bg-teal-900': route.name === routeName, // Cor de fundo quando link ativo
-      'hover:bg-teal-400': route.name !== routeName && !routeName.includes('logout'), // Cor de fundo no hover quando não ativo
-      'font-bold': route.name === routeName, // Texto em negrito quando ativo
-    });
+    const isActive = (path) => {
+      return route.path === path;
+    };
+
+    const isRouteActive = (path) => {
+      return route.path.startsWith(path) ? 'router-link-active' : '';
+    };
+
+    const logoutHandler = () => {
+      logout();
+      router.push({ name: 'Login' });
+    };
 
     return {
-      linkClasses,
+      isLoggedIn,
+      isActive,
+      logoutHandler,
+      isRouteActive,
     };
-  },
-  data() {
-    return {
-      isLoggedIn: !!localStorage.getItem('auth_token'), // Inicializa com base no token de autenticação
-    };
-  },
-  methods: {
-    async logout() {
-      try {
-        await axios.post('http://localhost:8000/api/logout');
-        localStorage.removeItem('auth_token');
-        Cookies.remove('XSRF-TOKEN', { path: '/' });
-        Cookies.remove('laravel_session');
-        this.isLoggedIn = false;
-        this.$router.push({ name: 'Login' });
-      } catch (error) {
-        console.error('Erro ao fazer logout:', error);
-        alert('Erro ao fazer logout. Por favor, tente novamente.');
-      }
-    },
   },
 };
 </script>
+
+<style scoped>
+.container {
+  @apply mx-auto px-4;
+}
+
+.router-link {
+  @apply text-sm text-gray-300 hover:text-teal-400 transition-colors duration-300;
+}
+
+.router-link-active {
+  @apply text-teal-400 font-bold;
+}
+</style>
