@@ -8,8 +8,8 @@
 </template>
 
 <script>
-import DeveloperForm from '../components/DeveloperForm.vue';
-import CustomHeader from '../components/CustomHeader.vue';
+import DeveloperForm from '../../components/form/DeveloperForm.vue';
+import CustomHeader from '../../components/CustomHeader.vue';
 
 export default {
   components: {

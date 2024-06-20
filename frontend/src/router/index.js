@@ -2,12 +2,12 @@ import { createRouter, createWebHistory } from 'vue-router';
 import isAuthenticated from '@/middleware/authenticated';
 
 import HomeView from '../views/HomeView.vue';
-import RegisterView from '../views/RegisterView.vue';
-import LoginView from '../views/LoginView.vue';
-import DeveloperView from '../views/DeveloperView.vue';
-import LevelView from '../views/LevelView.vue';
-import DeveloperFormView from '../views/DeveloperFormView.vue';
-import LevelFormView from '../views/LevelFormView.vue';
+import RegisterView from '../views/auth/RegisterView.vue';
+import LoginView from '../views/auth/LoginView.vue';
+import DeveloperView from '../views/developer/DeveloperView.vue';
+import LevelView from '../views/level/LevelView.vue';
+import DeveloperFormView from '../views/developer/DeveloperFormView.vue';
+import LevelFormView from '../views/level/LevelFormView.vue';
 
 const routes = [
   { path: '/', name: 'Home', component: HomeView },

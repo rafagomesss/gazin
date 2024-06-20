@@ -27,7 +27,7 @@
 
 <script>
 import axios from 'axios';
-import FormSkeleton from './FormSkeleton.vue';
+import FormSkeleton from '../skeleton/FormSkeleton.vue';
 
 export default {
   props: {
@@ -54,7 +54,7 @@ export default {
       if (this.levelId) {
         axios.get(`http://localhost:8000/api/levels/${this.levelId}`)
           .then(response => {
-            this.level = response.data.data;
+            this.level = response.data.data ?? [];
             this.isEditMode = true;
           })
           .catch(error => {
@@ -63,6 +63,8 @@ export default {
           .finally(() => {
             this.loading = false;
           });
+      } else {
+        this.loading = false;
       }
     },
     saveLevel() {
@@ -73,8 +75,12 @@ export default {
           this.$emit('save');
         })
         .catch(error => {
-          this.errorMessage = error.response.data.message;
-          console.error('Error saving level:', error);
+          const { data, status } = error.response
+          if (data.error && status === 422) {
+            this.errorMessage = error.response.data.error;
+          } else {
+            this.errorMessage = 'Erro ao salvar o nível. Por favor, tente novamente.';
+          }
         });
     },
     goBack() {

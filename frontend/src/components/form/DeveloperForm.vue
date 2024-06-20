@@ -45,7 +45,7 @@
 
 <script>
 import axios from 'axios';
-import FormSkeleton from '../components/FormSkeleton.vue';
+import FormSkeleton from '../skeleton/FormSkeleton.vue';
 
 export default {
   props: {

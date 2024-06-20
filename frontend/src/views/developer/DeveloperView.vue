@@ -60,8 +60,8 @@
 
 <script>
 import axios from 'axios';
-import CustomHeader from '../components/CustomHeader.vue';
-import SkeletonLoader from '../components/SkeletonLoader.vue';
+import CustomHeader from '../../components/CustomHeader.vue';
+import SkeletonLoader from '../../components/skeleton/SkeletonLoader.vue';
 
 export default {
   components: {
@@ -125,7 +125,6 @@ export default {
               })
               .catch(error => {
                 this.$toast.info('Error: ' + error.message)
-                console.log(error)
               });
           }
         })

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Repositories\LevelRepository;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class LevelService
 {
@@ -27,7 +28,12 @@ class LevelService
     public function create(array $data)
     {
         $validator = Validator::make($data, [
-            'level' => 'required|string|max:255'
+            'level' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:levels,level',
+            ],
         ]);
 
         if ($validator->fails()) {
@@ -42,7 +48,12 @@ class LevelService
         $level = $this->levelRepository->find($id);
 
         $validator = Validator::make($data, [
-            'level' => 'required|string|max:255'
+            'level' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('levels', 'level')->ignore($level->id),
+            ],
         ]);
 
         if ($validator->fails()) {

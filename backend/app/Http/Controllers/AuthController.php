@@ -46,7 +46,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['errors' => $validator->errors()], 401);
         }
 
         $user = User::where('email', $request->email)->first();

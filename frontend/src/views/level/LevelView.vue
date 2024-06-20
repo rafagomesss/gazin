@@ -67,8 +67,8 @@
 
 <script>
 import axios from 'axios'
-import CustomHeader from '../components/CustomHeader.vue'
-import SkeletonLoader from '../components/SkeletonLoader.vue'
+import CustomHeader from '../../components/CustomHeader.vue'
+import SkeletonLoader from '../../components/skeleton/SkeletonLoader.vue'
 
 export default {
   components: {
@@ -94,7 +94,6 @@ export default {
       axios
         .get('http://localhost:8000/api/levels')
         .then((response) => {
-          console.log(response)
           this.levels = response.data.data ?? []
         })
         .catch((error) => {

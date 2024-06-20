@@ -54,7 +54,8 @@ axios.interceptors.response.use(
     } else {
       const { status, data } = error.response;
       if (status === 422) {
-        const messageError = JSON.stringify(data.message) ?? (JSON.stringify(data.errors.email) ? 'Dados inválidos!' : 'Erro desconhecido')
+        const errorAuth = JSON.stringify(data.errors?.email) || JSON.stringify(data.errors?.password)
+        const messageError = errorAuth ? 'Dados inválidos!' : JSON.stringify(data.message) ?? data.error ?? 'Erro desconhecido!'
         toast.warning('Erro de validação: ' + messageError, { position: POSITION.BOTTOM_RIGHT });
       } else if (status === 500) {
         toast.error('Erro interno do servidor. Por favor, tente novamente mais tarde.', { position: POSITION.BOTTOM_RIGHT });
