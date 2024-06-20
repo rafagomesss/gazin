@@ -47,8 +47,11 @@ export default {
         localStorage.setItem('auth_token', response.data.token);
         this.$router.push('/');
       } catch (error) {
-        if (error.response) {
-          this.errorMessage = error.response.data.message || 'Erro ao fazer login. Por favor, tente novamente.';
+        const { data } = error.response;
+        if (data) {
+          const { errors } = data;
+          const error = errors.email ? 'Dados inválidos!' : 'Erro ao realizar login, por favor tente novamente!';
+          this.errorMessage = error || 'Erro ao fazer login. Por favor, tente novamente.';
         } else {
           this.errorMessage = 'O backend está indisponível. Por favor, tente novamente mais tarde.';
         }

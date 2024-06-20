@@ -2,7 +2,7 @@
   <div>
     <CustomHeader />
     <div class="container mx-auto mt-4 p-4">
-      <developer-form :developer-id="$route.params.id" @save="handleSave" />
+      <developer-form :developer-id="Number.parseInt($route.params.id)" @save="handleSave" />
     </div>
   </div>
 </template>

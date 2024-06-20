@@ -1,45 +1,51 @@
 <template>
-  <div class="max-w-3xl mx-auto mt-8">
-    <h2 class="text-2xl font-bold mb-4">{{ isEditMode ? 'Editar Desenvolvedor' : 'Cadastrar Desenvolvedor' }}</h2>
-    <form @submit.prevent="saveDeveloper" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2">Nome</label>
-        <input v-model="developer.name" class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
-      </div>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2">Sexo</label>
-        <select v-model="developer.gender" id="gender" name="gender" class="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-          <option value="M">Masculino</option>
-          <option value="F">Feminino</option>
-        </select>
-      </div>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2">Dt. Nascimento</label>
-        <input type="date" v-model="developer.birthdate" class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
-      </div>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2">Hobby</label>
-        <input v-model="developer.hobby" class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
-      </div>
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2">Nível</label>
-        <select v-model="developer.level.id" class="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-          <option v-for="level in levels" :key="level.id" :value="level.id">{{ level.level }}</option>
-        </select>
-      </div>
-      <div v-if="errorMessage" class="mb-4 text-red-500">
-        {{ errorMessage }}
-      </div>
-      <div class="flex items-center justify-end">
-        <button @click="goBack" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">Voltar</button>
-        <button type="submit" class="bg-teal-400 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded">Salvar</button>
-      </div>
-    </form>
+  <div>
+    <div v-if="loading" class="max-w-3xl mx-auto mt-8">
+      <FormSkeleton />
+    </div>
+    <div v-else class="max-w-3xl mx-auto mt-8">
+      <h2 class="text-2xl font-bold mb-4">{{ isEditMode ? 'Editar Desenvolvedor' : 'Cadastrar Desenvolvedor' }}</h2>
+      <form @submit.prevent="saveDeveloper" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Nome</label>
+          <input v-model="developer.name" class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Sexo</label>
+          <select v-model="developer.gender" id="gender" name="gender" class="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <option value="M">Masculino</option>
+            <option value="F">Feminino</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Dt. Nascimento</label>
+          <input type="date" v-model="developer.birthdate" class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Hobby</label>
+          <input v-model="developer.hobby" class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2">Nível</label>
+          <select v-model="developer.level.id" class="border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            <option v-for="level in levels" :key="level.id" :value="level.id">{{ level.level }}</option>
+          </select>
+        </div>
+        <div v-if="errorMessage" class="mb-4 text-red-500">
+          {{ errorMessage }}
+        </div>
+        <div class="flex items-center justify-end">
+          <button @click="goBack" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">Voltar</button>
+          <button type="submit" class="bg-teal-400 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded">Salvar</button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import FormSkeleton from '../components/FormSkeleton.vue';
 
 export default {
   props: {
@@ -48,6 +54,9 @@ export default {
       default: null,
     },
   },
+  components: {
+    FormSkeleton,
+  },
   data() {
     return {
       developer: {
@@ -55,11 +64,14 @@ export default {
         gender: '',
         birthdate: '',
         hobby: '',
-        level: '',
+        level: {
+          id: ''
+        },
       },
       levels: [],
       isEditMode: false,
       errorMessage: '',
+      loading: true,
     };
   },
   methods: {
@@ -81,7 +93,12 @@ export default {
           })
           .catch(error => {
             console.error('Error fetching developer:', error);
+          })
+          .finally(() => {
+            this.loading = false;
           });
+      } else {
+        this.loading = false;
       }
     },
     saveDeveloper() {
