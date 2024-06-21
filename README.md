@@ -35,15 +35,10 @@ php artisan migrate
 #### .env
 
 DB_CONNECTION=mysql  
-
 DB_HOST=localhost  
-
 DB_PORT=3306  
-
 DB_DATABASE=gazin  
-
 DB_USERNAME=root  
-
 DB_PASSWORD=root  
 
 
