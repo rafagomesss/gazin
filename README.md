@@ -33,10 +33,10 @@ php artisan migrate
 ## 2. Configurar o Banco de Dados
 ### Crie um banco de dados MySQL chamado gazin com charset utf8mb4.
 
-MySQL 8.0.33
-database: gazin
-user: root
-password: root
+MySQL 8.0.33  
+database: gazin  
+user: root  
+password: root  
 ```
 CREATE DATABASE IF NOT EXISTS gazin CHARSET utf8mb4 COLLATE utf8mb4_general_ci;
 ```
