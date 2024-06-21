@@ -27,18 +27,25 @@ cd backend
 composer install
 cp .env.example .env
 php artisan key:generate
+php artisan migrate
 ```
 
 ## 2. Configurar o Banco de Dados
 ### Crie um banco de dados MySQL chamado gazin com charset utf8mb4.
 #### .env
 
-DB_CONNECTION=mysql
-DB_HOST=localhost
-DB_PORT=3306
-DB_DATABASE=gazin
-DB_USERNAME=root
-DB_PASSWORD=root
+DB_CONNECTION=mysql  
+
+DB_HOST=localhost  
+
+DB_PORT=3306  
+
+DB_DATABASE=gazin  
+
+DB_USERNAME=root  
+
+DB_PASSWORD=root  
+
 
 ## 3. Iniciar o Servidor PHP Built-in
 
